@@ -1,0 +1,35 @@
+<idea-plugin>
+    <id>com.credowolf.DepE</id>
+    <name>DepE Versions Exporter</name>
+    <version>0.8</version>
+    <vendor email="credowolf777@gmail.com" url="https://github.com/ViktorGolt">Viktor Goltstein</vendor>
+
+    <description><![CDATA[
+        DepE -> Dependencies Exporter
+        This Android Studio plugin allows you to export versions from module or whole project build files to separate versions.gradle file.
+        It creates 'ext' closure where contains versions which  are used it build files.
+        To export versions navigate to Refactor -> Export Dependencies -> Choose module or project
+     ]]></description>
+
+    <change-notes><![CDATA[
+      First release - support exporting versions from modules to single versions.gradle file
+    ]]></change-notes>
+
+
+    <idea-version since-build="181.5540"/>
+
+
+    <depends>com.intellij.modules.androidstudio</depends>
+    <depends>org.jetbrains.android</depends>
+    <depends>org.jetbrains.plugins.gradle</depends>
+    <depends>com.intellij.properties</depends>
+
+
+    <extensions defaultExtensionNs="com.intellij"/>
+
+    <actions>
+        <action id="666" class="com.credowolf.depe.FixAction" text="Export versions">
+            <add-to-group group-id="RefactoringMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>
