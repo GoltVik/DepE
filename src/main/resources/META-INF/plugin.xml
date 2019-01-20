@@ -12,7 +12,8 @@
      ]]></description>
 
     <change-notes><![CDATA[
-      First release - support exporting versions from modules to single versions.gradle file
+     - Added possibility create new or choose existing file where export versions
+     - The issue with version competition has been fixed (the latest ones are being saved)
     ]]></change-notes>
 
 
