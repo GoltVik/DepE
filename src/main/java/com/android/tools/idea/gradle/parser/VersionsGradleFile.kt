@@ -1,5 +1,6 @@
 package com.android.tools.idea.gradle.parser
 
+import com.credowolf.depe.utils.versionsList
 import com.intellij.codeInsight.actions.ReformatCodeProcessor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
@@ -12,6 +13,35 @@ import org.jetbrains.plugins.groovy.lang.psi.api.statements.expressions.GrMethod
 import org.jetbrains.plugins.groovy.lang.psi.api.util.GrStatementOwner
 
 class VersionsGradleFile(@NotNull buildFile: VirtualFile, @NotNull project: Project) : GradleBuildFile(buildFile, project) {
+
+    fun addVersions(newVersions: List<UnparseableStatement>) = setValue(ExtraBuildFileKey.EXT, getCombined(newVersions))
+
+    private fun getCombined(newItems: List<UnparseableStatement>): List<UnparseableStatement> {
+        ArrayList(versionsList.map { VersionUnparseableStatement(it) })
+                .let { existingVersions ->
+                    newItems.map { VersionUnparseableStatement(it) }
+                            .forEach {
+                                when (val statement = existingVersions.containsGroup(it)) {
+                                    null -> existingVersions.add(it)
+
+                                    else -> {
+                                        if (statement.version < it.version) {
+                                            existingVersions.remove(statement)
+                                            existingVersions.add(it)
+                                        }
+                                    }
+                                }
+
+                            }
+                    return existingVersions.map { it.realStatement }
+                }
+    }
+
+    private fun List<VersionUnparseableStatement>.containsGroup(statement: VersionUnparseableStatement): VersionUnparseableStatement? {
+        forEach { if (it.name == statement.name) return it }
+        return null
+    }
+
 
     fun setValue(key: ExtraBuildFileKey, value: Any) {
         checkInitialized()
@@ -124,4 +154,7 @@ class VersionsGradleFile(@NotNull buildFile: VirtualFile, @NotNull project: Proj
         return key.getValue(arg)
     }
 
+    data class VersionUnparseableStatement(val realStatement: UnparseableStatement,
+                                           val name: String = realStatement.toString().split("=")[0].trim(),
+                                           val version: String = realStatement.toString().split("=")[1].trim())
 }
