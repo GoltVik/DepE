@@ -34,7 +34,7 @@ class ModulesDialogForm internal constructor(project: Project) : JPanel() {
         selectFile!!.addActionListener {
             val projectDir = project.guessProjectDir()
             if(projectDir != null) {
-                val virtualFile = FileChooser.chooseFile(createSingleGradleFileDescriptor(), project, guessVersionsFile(project = project))
+                val virtualFile = FileChooser.chooseFile(createSingleGradleFileDescriptor(), project, project.guessVersionsFile())
                 if (virtualFile != null) {
                     versionsFileName!!.text = virtualFile.path.removePrefix("${projectDir.path}/")
                 }

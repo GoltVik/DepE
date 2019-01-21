@@ -15,6 +15,7 @@ import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.util.Comparing
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.plugins.groovy.lang.psi.api.statements.GrStatement
 
 val ModuleManager.activeSubmodules: List<Module> get() = modules.drop(1)
 
@@ -27,18 +28,12 @@ fun Project.showNotification(message: String) {
     Notifications.Bus.notify(notification, this)
 }
 
-val GradleBuildFile.dependenciesList: List<BuildFileStatement>
-    get() = (getValue(BuildFileKey.DEPENDENCIES) as java.util.ArrayList<*>?
-            ?: ArrayList<Any>()).map { it as BuildFileStatement }
-
-val VersionsGradleFile.versionsList: List<UnparseableStatement>
-    get() = (getValue(ExtraBuildFileKey.EXT) as java.util.ArrayList<*>?
-            ?: ArrayList<Any>()).map { it as UnparseableStatement }
-
-fun guessVersionsFile(project: Project): VirtualFile {
-    write(project) { project.guessProjectDir()!!.findOrCreateChildData(project, project.getVersionsFileName()) }
-    return project.guessProjectDir()!!.findChild(project.getVersionsFileName())!!
+fun Project.guessVersionsFile(): VirtualFile {
+    write(this) { this.guessProjectDir()!!.findOrCreateChildData(this, this.getVersionsFileName()) }
+    return this.guessProjectDir()!!.findChild(this.getVersionsFileName())!!
 }
+
+val GrStatement.group: String get() = text.split("=")[0]
 
 fun createSingleGradleFileDescriptor(extension: String = "gradle"): FileChooserDescriptor {
     return FileChooserDescriptor(true, false, false, false, false, false)
@@ -49,6 +44,13 @@ fun createSingleGradleFileDescriptor(extension: String = "gradle"): FileChooserD
             }
 }
 
+fun union(vararg lists: List<Any>): List<*> {
+    return ArrayList<Any>().apply {
+        lists.forEach {
+            addAll(it)
+        }
+    }
+}
 fun write(project: Project, action: () -> Unit) = WriteCommandAction.runWriteCommandAction(project, action)
 
 fun String.sanitizeFileName(): String = if (!this.endsWith(".gradle")) this.plus(".gradle").toLowerCase() else this.toLowerCase()

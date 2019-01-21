@@ -1,4 +1,4 @@
-**This is first build, so it might be unstable. Feel free to share your feedback and report issues!**
+**This plugin is still in beta stage, so it might be unstable. Feel free to share your feedback and report issues!**
 
 This plugin is in JetBrains Plugins Repository! Get it from [here](https://plugins.jetbrains.com/plugin/11489-depe-versions-exporter).
 

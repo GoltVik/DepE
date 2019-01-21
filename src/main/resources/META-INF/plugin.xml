@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.credowolf.DepE</id>
     <name>DepE Versions Exporter</name>
-    <version>0.8</version>
+    <version>0.9</version>
     <vendor email="credowolf777@gmail.com" url="https://github.com/ViktorGolt">Viktor Goltstein</vendor>
 
     <description><![CDATA[
@@ -12,7 +12,8 @@
      ]]></description>
 
     <change-notes><![CDATA[
-     - Added possibility create new or choose existing file where export versions
+     - Added option of exporting build.gradle versions variables
+     - Added option of selecting an existing one or creating a new file where the versions are exported
      - The issue with version competition has been fixed (the latest ones are being saved)
     ]]></change-notes>
 
