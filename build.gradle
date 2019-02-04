@@ -22,7 +22,7 @@ apply plugin: 'kotlin'
 apply plugin: 'groovy'
 
 group 'com.credowolf.depe'
-version '0.9'
+version '0.9.1'
 
 
 intellij {
