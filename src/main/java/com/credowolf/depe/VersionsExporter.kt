@@ -43,7 +43,7 @@ class VersionsExporter(private val project: Project) {
         val dependencies = buildFile.dependenciesList.map { dependency ->
             if (dependency is Dependency) {
                 if (dependency.type == Dependency.Type.EXTERNAL && !dependency.version.startsWith("\$")) { //replace this dependency version
-                    moduleVersionsMap[dependency.name] = UnparseableStatement(dependency.toExt, project)
+                    moduleVersionsMap[dependency.group] = UnparseableStatement(dependency.toExt, project)
                     Dependency(dependency.scope, dependency.type, dependency.toDependencies, dependency.extraClosure)
                 } else {
                     dependency
