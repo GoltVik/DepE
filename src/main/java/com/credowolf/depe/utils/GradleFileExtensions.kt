@@ -18,8 +18,8 @@ fun GradleBuildFile.findDefinitions(): List<GrStatement> {
     val owner = this.psiFile as GrStatementOwner
     val closure = this.getClosure(BuildFileKey.DEPENDENCIES.path)
 
-    val ownerList = owner.statements.filter { it is GrVariableDeclaration }
-    val closureList = closure?.statements?.filter { it is GrVariableDeclaration } ?: listOf()
+    val ownerList = owner.statements.filterIsInstance<GrVariableDeclaration>()
+    val closureList = closure?.statements?.filterIsInstance<GrVariableDeclaration>() ?: listOf()
 
     return (union(ownerList, closureList) as List<GrStatement>)
 }
