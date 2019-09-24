@@ -7,7 +7,9 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import org.jetbrains.plugins.groovy.lang.psi.GroovyPsiElementFactory
 import org.jetbrains.plugins.groovy.lang.psi.api.statements.GrStatement
+import java.lang.Exception
 
 class VersionsExporter(private val project: Project) {
 
@@ -34,7 +36,10 @@ class VersionsExporter(private val project: Project) {
 
     private fun readDepVersionsFromModule(buildFile: GradleBuildFile): Pair<MutableMap<String, UnparseableStatement>, List<BuildFileStatement>> {
         val moduleVersionsMap = mutableMapOf<String, UnparseableStatement>()
-        val dependencies = buildFile.dependenciesList.map { dependency ->
+
+        val rawDependencies = preparseDependencies(ArrayList(buildFile.dependenciesList))
+
+        val dependencies = rawDependencies.map { dependency ->
             if (dependency is Dependency) {
                 if (dependency.type == Dependency.Type.EXTERNAL && !dependency.version.startsWith("\$")) { //replace this dependency version
                     moduleVersionsMap[dependency.group] = UnparseableStatement(dependency.toExt, project)
@@ -42,24 +47,43 @@ class VersionsExporter(private val project: Project) {
                 } else dependency
             } else dependency
         }
-
-        dependencies.filterIsInstance<UnparseableStatement>().forEach { statement ->
-            if (statement.toString().startsWith("annotationProcessor") || statement.toString().startsWith("kapt")) {
-                processUnparseableStatement(statement).forEach { parsedStatement ->
-                    println(statement)
-                }
-            }
-        }
-
         return Pair(moduleVersionsMap, dependencies)
     }
 
+    private fun preparseDependencies(rawDeps: ArrayList<BuildFileStatement>): ArrayList<BuildFileStatement> {
+        val parsedList = ArrayList<BuildFileStatement>(rawDeps)
+
+        rawDeps.forEachIndexed { index, statement ->
+            if (statement is UnparseableStatement) {
+                try {
+                    val parsed = processUnparseableStatement(statement)
+                    if(parsed.isNotEmpty()) {
+                        parsedList.remove(statement)
+                        processUnparseableStatement(statement).forEach { parsedStatement -> parsedList.add(index, parsedStatement) }
+                    }
+                } catch (ignored : Exception) {
+                }
+
+            }
+        }
+        return parsedList
+    }
+
+
     private fun processUnparseableStatement(originalStatement: UnparseableStatement): List<UnparseableStatement> {
 
-        val statements = originalStatement.toString().split('\n')
+        val statementParts = originalStatement.toString()
+                .replace("(", "")
+                .replace(")", "")
+                .replace(",", "")
+                .replace(" ", "")
+                .replace("\"", "")
+                .replace("\'", "").trimIndent()
+                .split('\n')
 
+        val prefix = statementParts[0];
 
-       return ArrayList()
+        return statementParts.subList(1, statementParts.size).map { stringValue -> UnparseableStatement("$prefix \"$stringValue\"", project) }.reversed()
     }
 
     private fun readVarsFromModule(buildFile: GradleBuildFile): Pair<MutableMap<String, UnparseableStatement>, Array<GrStatement>> {
