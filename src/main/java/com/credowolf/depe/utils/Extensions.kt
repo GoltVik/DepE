@@ -22,8 +22,9 @@ val ModuleManager.activeSubmodules: List<Module> get() = modules.drop(1)
 val Project.moduleManager: ModuleManager get() = ModuleManager.getInstance(this)
 
 fun Project.showNotification(message: String) {
-    val notification = NotificationGroup("Versions exporter", NotificationDisplayType.BALLOON, true)
-            .createNotification("Nothing to export", null, message, NotificationType.INFORMATION)
+    val notification =
+            NotificationGroup("Versions exporter", NotificationDisplayType.BALLOON, true)
+                    .createNotification("Nothing to export", null, message, NotificationType.INFORMATION)
 
     Notifications.Bus.notify(notification, this)
 }
@@ -45,12 +46,9 @@ fun createSingleGradleFileDescriptor(extension: String = "gradle"): FileChooserD
 }
 
 fun union(vararg lists: List<Any>): List<*> {
-    return ArrayList<Any>().apply {
-        lists.forEach {
-            addAll(it)
-        }
-    }
+    return ArrayList<Any>().apply { lists.forEach { addAll(it) } }
 }
+
 fun write(project: Project, action: () -> Unit) = WriteCommandAction.runWriteCommandAction(project, action)
 
 fun String.sanitizeFileName(): String = if (!this.endsWith(".gradle")) this.plus(".gradle").toLowerCase() else this.toLowerCase()

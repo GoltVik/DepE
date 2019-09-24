@@ -19,7 +19,7 @@
     <idea-version since-build="181.5540"/>
 
 
-    <depends>com.intellij.modules.androidstudio</depends>
+<!--    <depends>com.intellij.modules.androidstudio</depends>-->
     <depends>org.jetbrains.android</depends>
     <depends>org.jetbrains.plugins.gradle</depends>
     <depends>com.intellij.properties</depends>

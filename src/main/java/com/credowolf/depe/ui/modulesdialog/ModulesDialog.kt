@@ -22,8 +22,8 @@ class ModulesDialog internal constructor(private val actionEvent: AnActionEvent,
 
     override fun doOKAction() {
         ApplicationManager.getApplication().invokeLater {
-            currentProject.setFileName(form.versionsFileName!!.text)
-            VersionsExporter(currentProject).startActionsWithModules(selectedModules, sync)
+            currentProject.setVersionsContainerFileName(form.versionsFileName!!.text)
+            VersionsExporter(currentProject).startActionsWithModules(selectedModules) { sync }
         }
         super.doOKAction()
 
@@ -36,7 +36,7 @@ class ModulesDialog internal constructor(private val actionEvent: AnActionEvent,
             currentProject.moduleManager.activeSubmodules
         }
 
-    private inline val sync get() = { SyncProjectAction().actionPerformed(actionEvent) }
+    private inline val sync get() = SyncProjectAction().actionPerformed(actionEvent)
 
 }
 

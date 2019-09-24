@@ -1,8 +1,6 @@
 package com.credowolf.depe.utils
 
 import com.android.tools.idea.gradle.parser.Dependency
-import com.android.tools.idea.gradle.parser.UnparseableStatement
-
 
 val Dependency.toDependencies: String get() = "$name:$group:\$${group.replace("-", "_")}"
 val Dependency.toExt: String get() = "${group.replace("-", "_")}='$version'"

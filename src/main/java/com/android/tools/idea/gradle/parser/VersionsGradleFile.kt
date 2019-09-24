@@ -17,24 +17,19 @@ class VersionsGradleFile(@NotNull buildFile: VirtualFile, @NotNull project: Proj
     fun addVersions(newVersions: List<UnparseableStatement>) = setValue(ExtraBuildFileKey.EXT, getCombined(newVersions))
 
     private fun getCombined(newItems: List<UnparseableStatement>): List<UnparseableStatement> {
-        ArrayList(versionsList.map { VersionUnparseableStatement(it) })
-                .let { existingVersions ->
-                    newItems.map { VersionUnparseableStatement(it) }
-                            .forEach {
-                                when (val statement = existingVersions.containsGroup(it)) {
-                                    null -> existingVersions.add(it)
-
-                                    else -> {
-                                        if (statement.version < it.version) {
-                                            existingVersions.remove(statement)
-                                            existingVersions.add(it)
-                                        }
-                                    }
-                                }
-
-                            }
-                    return existingVersions.map { it.realStatement }
+        ArrayList(versionsList.map { VersionUnparseableStatement(it) }).let { existingVersions ->
+            newItems.map { VersionUnparseableStatement(it) }.forEach {
+                when (val statement = existingVersions.containsGroup(it)) {
+                    null -> existingVersions.add(it)
+                    else -> if (statement.version < it.version) {
+                        existingVersions.remove(statement)
+                        existingVersions.add(it)
+                    }
                 }
+
+            }
+            return existingVersions.map { it.realStatement }
+        }
     }
 
     private fun List<VersionUnparseableStatement>.containsGroup(statement: VersionUnparseableStatement): VersionUnparseableStatement? {
@@ -60,7 +55,7 @@ class VersionsGradleFile(@NotNull buildFile: VirtualFile, @NotNull project: Proj
     }
 
     private fun setValueStatic(root: GrStatementOwner, key: ExtraBuildFileKey, value: Any, reformatClosure: Boolean, filter: ValueFactory.KeyFilter?) {
-        if (value === GradleBuildFile.UNRECOGNIZED_VALUE) {
+        if (value === UNRECOGNIZED_VALUE) {
             return
         }
         var method = getMethodCallByPath(root, key.path)
